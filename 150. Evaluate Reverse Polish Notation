@@ -1,0 +1,21 @@
+class Solution {
+    public int evalRPN(String[] tokens) {
+        if(tokens.length == 0) return 0;
+        Stack<Integer> stack = new Stack<>();
+        for(int i = 0; i < tokens.length; i++){
+            String s = tokens[i];
+            if(s.equals("+") || s.equals("-") || s.equals("*") || s.equals("/")){
+                int b = stack.pop();
+                int a = stack.pop();
+                switch(s){
+                    case "+": stack.push(a+b); break;
+                    case "-": stack.push(a-b); break;
+                    case "*": stack.push(a*b); break;
+                    case "/": stack.push(a/b); break;
+                }
+            }
+            else stack.push(Integer.valueOf(s));
+        }
+        return stack.pop();
+    }
+}

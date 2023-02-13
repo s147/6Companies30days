@@ -1,0 +1,80 @@
+There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1. You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai.
+
+For example, the pair [0, 1], indicates that to take course 0 you have to first take course 1.
+Return true if you can finish all courses. Otherwise, return false.
+
+ 
+
+Example 1:
+
+Input: numCourses = 2, prerequisites = [[1,0]]
+Output: true
+Explanation: There are a total of 2 courses to take. 
+To take course 1 you should have finished course 0. So it is possible.
+Example 2:
+
+Input: numCourses = 2, prerequisites = [[1,0],[0,1]]
+Output: false
+Explanation: There are a total of 2 courses to take. 
+To take course 1 you should have finished course 0, and to take course 0 you should also have finished course 1. So it is impossible.
+ 
+
+Constraints:
+
+1 <= numCourses <= 2000
+0 <= prerequisites.length <= 5000
+prerequisites[i].length == 2
+0 <= ai, bi < numCourses
+All the pairs prerequisites[i] are unique.
+
+SOLUTION
+
+class Solution {
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        ArrayList<Integer>[] courses = new ArrayList[numCourses];
+        for(int i = 0; i < numCourses; i++){
+            courses[i] = new ArrayList();
+        }
+        for(int[] p : prerequisites){
+            courses[p[0]].add(p[1]);
+        }
+        
+        boolean[] processing = new boolean[numCourses];
+        boolean[] checkedNoCycle = new boolean[numCourses];
+        
+        for(int currCourse = 0; currCourse < numCourses; currCourse++){
+            //check current course causing cycle
+            if(isCycle(currCourse, courses, processing, checkedNoCycle)) return false;
+        }
+        
+        return true;
+    }
+    
+    private boolean isCycle(int currCourse, ArrayList<Integer>[] courses, boolean[] processing, boolean[] checkedNoCycle){
+        //Is this course already passed cycle detection
+        if(checkedNoCycle[currCourse]) return false;
+        
+        //currently processing means cycle detected
+        if(processing[currCourse]) return true;
+        
+        //current courses is not dependent upon any other course
+        if(courses[currCourse].size() == 0) return false;
+        
+        //mark current course as processing
+        processing[currCourse] = true;
+        
+        for(int neighbor : courses[currCourse]){
+            if(isCycle(neighbor, courses, processing, checkedNoCycle)) {
+                return true;
+            }
+        }
+        
+        //now processing of current current course is finished
+        processing[currCourse] = false;
+        
+        //mark current course as checked and not found cycle
+        checkedNoCycle[currCourse] = true;
+        
+        return false;
+    }
+}
